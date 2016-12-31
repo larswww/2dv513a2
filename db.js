@@ -1,7 +1,7 @@
 "use strict";
 
 let sqlite = require("sqlite3");
-let db = new sqlite.Database("db/test.db");
+let db = new sqlite.Database("db/medium.db");
 
 let createDb = function(){
 
@@ -10,8 +10,8 @@ let createDb = function(){
         console.log("db open")
     });
 
-    //db.run("CREATE TABLE User (name TEXT PRIMARY KEY)");
-   // db.run("CREATE TABLE Comment (id TEXT PRIMARY KEY, body TEXT, score INT, created INT, author TEXT)");
+    db.run("CREATE TABLE User (name TEXT PRIMARY KEY)");
+   db.run("CREATE TABLE Comment (id TEXT PRIMARY KEY, body TEXT, score INT, created INT, author TEXT)");
 
     //db.run("DROP TABLE Comment");
 
@@ -21,8 +21,6 @@ let createDb = function(){
 
 let addRedditComment = function (commentObject) {
     db.serialize(function () {
-
-        console.log(commentObject);
 
         let commentStmt = db.prepare("INSERT INTO Comment(id, body, score, created, author) VALUES($id, $body, $score, $created, $author)");
 

@@ -3,7 +3,7 @@
 let fs = require("fs");
 let db = require("./db.js");
 
-let stream = fs.createReadStream("resources/RC_2012-12");
+let stream = fs.createReadStream("resources/RC_2011-07");
 let remainder = "";
 
 stream.setEncoding("utf8");
