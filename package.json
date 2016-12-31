@@ -1,0 +1,14 @@
+{
+  "name": "2dv513a2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "test"
+  },
+  "author": "LW NB",
+  "license": "ISC",
+  "dependencies": {
+    "sqlite": "^2.2.4"
+  }
+}
