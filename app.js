@@ -3,13 +3,15 @@
 let fs = require("fs");
 let db = require("./db.js");
 
-let stream = fs.createReadStream("resources/RC_2007-10");
+let stream = fs.createReadStream("resources/RC_2011-07");
 let remainder = "";
+let time;
 
 stream.setEncoding("utf8");
 
 
 db.create();
+console.time("worktuples");
 
 let dataObjectToArrayOfArrays = function(objectArray) {
     let arrayOfTuples = [];
@@ -42,7 +44,7 @@ let dataObjectToArrayOfArrays = function(objectArray) {
         arrayOfTuples.push(tuple);
     });
 
-    db.addRedditComment(arrayOfTuples);
+   db.addRedditComment(arrayOfTuples);
 
 };
 
@@ -84,4 +86,8 @@ stream.on("data", (data) => {
 
 stream.resume();
 
+});
+
+stream.on("end", ()=> {
+console.timeEnd("worktuples");
 });
