@@ -31,9 +31,14 @@ let addRedditComment = function (arrayOfTuples) {
     // [8] = score, [9] = created_utc
 
 
-        let commentStmt = db.prepare("INSERT INTO Comment(id, parent_id, link_id, name, author, body, subreddit_id, subreddit, score, created_utc) VALUES (?)");
+        let commentStmt = db.prepare("INSERT INTO Comment(id, parent_id, link_id, name, author, body, subreddit_id, subreddit, score, created_utc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
-        commentStmt.run(arrayOfTuples);
+        arrayOfTuples.forEach(tuple => {
+            commentStmt.run(tuple);
+        });
+
+
+        //commentStmt.run(arrayOfTuples);
 
         // let userStmt = db.prepare("INSERT INTO 'User'(name) VALUES($name)");
         //
