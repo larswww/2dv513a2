@@ -1,7 +1,7 @@
 "use strict";
 
 let sqlite = require("sqlite3");
-let db = new sqlite.Database("db/newDesignNew.db");
+let db = new sqlite.Database("db/newDesignNewWithRestrictions.db");
 
 let createDb = function(){
 
@@ -10,8 +10,14 @@ let createDb = function(){
         console.log("db open");
 
 
-       let subredditRelation = db.prepare("CREATE TABLE Subreddit (subreddit_id VARCHAR, subreddit TEXT)");
-        let postRelation = db.prepare("CREATE TABLE Post (id VARCHAR, name TEXT, parent_id VARCHAR, link_id VARCHAR, author TEXT, body TEXT, subreddit_id VARCHAR, score INT, created_UTC INT)");
+        //With restrictions
+        let subredditRelation = db.prepare("CREATE TABLE Subreddit (subreddit_id VARCHAR PRIMARY KEY, subreddit TEXT UNIQUE)");
+        let postRelation = db.prepare("CREATE TABLE Post (id VARCHAR PRIMARY KEY, name TEXT, parent_id VARCHAR, link_id VARCHAR, author TEXT, body TEXT, subreddit_id VARCHAR, score INT, created_UTC INT)");
+
+        //No restrictions
+        //let subredditRelation = db.prepare("CREATE TABLE Subreddit (subreddit_id VARCHAR, subreddit TEXT)");
+        //let postRelation = db.prepare("CREATE TABLE Post (id VARCHAR PRIMARY KEY, name TEXT, parent_id VARCHAR, link_id VARCHAR, author TEXT, body TEXT, subreddit_id VARCHAR, score INT, created_UTC INT)");
+
 
         subredditRelation.run();
         postRelation.run();
@@ -47,7 +53,7 @@ let addRedditComment = function (postTuples, subredditTuples) {
 
             db.run("BEGIN TRANSACTION");
             let postRelation = db.prepare("INSERT INTO Post(id, name, parent_id, link_id, author, body, subreddit_id, score, created_utc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            let subredditRelation = db.prepare("INSERT INTO Subreddit(subreddit_id, subreddit) VALUES(?, ?)");
+            let subredditRelation = db.prepare("INSERT OR REPLACE INTO Subreddit(subreddit_id, subreddit) VALUES(?, ?)");
 
 
             postTuples.forEach(tuple => {
