@@ -3,14 +3,14 @@
 let fs = require("fs");
 let db = require("./db.js");
 
-let stream = fs.createReadStream("resources/RC_2007-10");
+let stream = fs.createReadStream("resources/RC_2011-07");
 let remainder = "";
 
 stream.setEncoding("utf8");
 
-
+console.time("dbTime");
+console.time("dataEnd");
 db.create();
-console.time("worktuples");
 
 let dataObjectToArrayOfArrays = function(objectArray) {
     let arrayOfSubreddits = [];
@@ -97,5 +97,9 @@ stream.resume();
 });
 
 stream.on("end", ()=> {
-console.timeEnd("worktuples");
+    console.timeEnd("dataEnd");
+
+    db.db.run("SELECT name FROM Posts", () => {
+        console.timeEnd("dbTime");
+    })
 });

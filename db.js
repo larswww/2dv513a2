@@ -1,7 +1,7 @@
 "use strict";
 
 let sqlite = require("sqlite3");
-let db = new sqlite.Database("db/newDesignNewWithRestrictions.db");
+let db = new sqlite.Database("db/bigOne.db");
 
 let createDb = function(){
 
@@ -9,19 +9,18 @@ let createDb = function(){
 
         console.log("db open");
 
-
         //With restrictions
-        let subredditRelation = db.prepare("CREATE TABLE Subreddit (subreddit_id VARCHAR PRIMARY KEY, subreddit TEXT UNIQUE)");
+        // let subredditRelation = db.prepare("CREATE TABLE Subreddit (subreddit_id VARCHAR PRIMARY KEY, subreddit TEXT UNIQUE)");
+        // let postRelation = db.prepare("CREATE TABLE Post (id VARCHAR PRIMARY KEY, name TEXT, parent_id VARCHAR, link_id VARCHAR, author TEXT, body TEXT, subreddit_id VARCHAR, score INT, created_UTC INT)");
+
+
+        // //No restrictions
+        let subredditRelation = db.prepare("CREATE TABLE Subreddit (subreddit_id VARCHAR, subreddit TEXT)");
         let postRelation = db.prepare("CREATE TABLE Post (id VARCHAR PRIMARY KEY, name TEXT, parent_id VARCHAR, link_id VARCHAR, author TEXT, body TEXT, subreddit_id VARCHAR, score INT, created_UTC INT)");
-
-        //No restrictions
-        //let subredditRelation = db.prepare("CREATE TABLE Subreddit (subreddit_id VARCHAR, subreddit TEXT)");
-        //let postRelation = db.prepare("CREATE TABLE Post (id VARCHAR PRIMARY KEY, name TEXT, parent_id VARCHAR, link_id VARCHAR, author TEXT, body TEXT, subreddit_id VARCHAR, score INT, created_UTC INT)");
-
-
+        // // //
         subredditRelation.run();
         postRelation.run();
-        // Post:
+        // // Post:
         //     id (VARCHAR 7) - Unique, key,
         //     name (VARCHAR 10) - Unique, key
         // parent_id (VARCHAR 10)
@@ -39,6 +38,7 @@ let createDb = function(){
         // subreddit (VARCHAR, 8)
 
     });
+
 };
 
 
@@ -64,7 +64,7 @@ let addRedditComment = function (postTuples, subredditTuples) {
                 subredditRelation.run(tuple);
             });
 
-            db.run("COMMIT")
+            db.run("COMMIT");
 
         });
 };
@@ -72,5 +72,6 @@ let addRedditComment = function (postTuples, subredditTuples) {
 
 module.exports = {
     create: createDb,
-    addRedditComment: addRedditComment
+    addRedditComment: addRedditComment,
+    db: db
 };
