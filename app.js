@@ -3,9 +3,8 @@
 let fs = require("fs");
 let db = require("./db.js");
 
-let stream = fs.createReadStream("resources/RC_2011-07");
+let stream = fs.createReadStream("resources/RC_2007-10");
 let remainder = "";
-let time;
 
 stream.setEncoding("utf8");
 
@@ -14,37 +13,46 @@ db.create();
 console.time("worktuples");
 
 let dataObjectToArrayOfArrays = function(objectArray) {
-    let arrayOfTuples = [];
+    let arrayOfSubreddits = [];
+    let arrayOfPosts =[];
 
     objectArray.forEach(commentObject => {
-        let tuple = [];
+        let postTuple = [];
+        let subredditTuple = [];
 
         //TODO ugly but really how else to get them in definite order?
         try {
+            //"INSERT INTO Post(id, name, parent_id, link_id, author, body, subreddit_id, score, created_utc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            //"INSERT INTO Subreddit(subreddit_id, subreddit) VALUES(?, ?)";
 
-            tuple[0] = commentObject["id"];
-            tuple[1] = commentObject["parent_id"];
-            tuple[2] = commentObject["link_id"];
-            tuple[3] = commentObject["name"];
-            tuple[4] = commentObject["author"];
-            tuple[5] = commentObject["body"];
-            tuple[6] = commentObject["subreddit_id"];
-            tuple[7] = commentObject["subreddit"];
-            tuple[8] = commentObject["score"];
-            tuple[9] = commentObject["created_utc"];
+            subredditTuple[0] = commentObject["subreddit_id"];
+            subredditTuple[1] = commentObject["subreddit"];
 
-            if (tuple.length != 10) {
-                throw new RangeException("tuple should have 10 attributes");
-            }
+            postTuple[0] = commentObject["id"];
+            postTuple[1] = commentObject["name"];
+            postTuple[2] = commentObject["parent_id"];
+            postTuple[3] = commentObject["link_id"];
+            postTuple[4] = commentObject["author"];
+            postTuple[5] = commentObject["body"];
+            postTuple[6] = commentObject["subreddit_id"];
+            postTuple[7] = commentObject["score"];
+            postTuple[8] = commentObject["created_utc"];
+
+            // if (subredditTuple.length != 2) {
+            //     throw new RangeException("tuple should have 2 attributes");
+            // } else if (postTuple.length != 8) {
+            //     throw RangeException("post should have 8 attributes");
+            // }
 
         } catch (e) {
             console.error(e);
         }
 
-        arrayOfTuples.push(tuple);
+        arrayOfPosts.push(postTuple);
+        arrayOfSubreddits.push(subredditTuple);
     });
 
-   db.addRedditComment(arrayOfTuples);
+   db.addRedditComment(arrayOfPosts, arrayOfSubreddits);
 
 };
 
