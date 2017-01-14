@@ -2,6 +2,7 @@
 
 let fs = require("fs");
 let db = require("./db.js");
+db.create();
 
 let stream = fs.createReadStream("resources/RC_2011-07");
 let remainder = "";
@@ -10,7 +11,6 @@ stream.setEncoding("utf8");
 
 console.time("dbTime");
 console.time("dataEnd");
-db.create();
 
 let dataObjectToArrayOfArrays = function(objectArray) {
     let arrayOfSubreddits = [];
@@ -86,28 +86,20 @@ let dataStreamToObjects = function(data) {
 };
 
 // stream.pipe(dataHandler);
-let counter = 0;
-let timeoutCounter = 1;
+
 stream.on("data", (data) => {
     stream.pause();
+
     dataStreamToObjects(data);
-    counter +=1;
-    if (counter % 1000 === 0) {
-        console.log("data sections" + counter);
-        console.log("timeout " + timeoutCounter);
-        timeoutCounter += 1;
-        setTimeout(function() {
-            stream.resume();
-        }, 10000);
-    } else {
-        stream.resume();
-    }
+
+stream.resume();
+
 });
 
 stream.on("end", ()=> {
     console.timeEnd("dataEnd");
 
-    // db.db.run("SELECT name FROM Post", () => {
-    //     console.timeEnd("dbTime");
-    // })
+    db.db.run("SELECT name FROM Post", () => {
+        console.timeEnd("dbTime");
+    })
 });

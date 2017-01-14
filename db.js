@@ -1,7 +1,7 @@
 "use strict";
 
 let sqlite = require("sqlite3");
-let db = new sqlite.Database("db/largeDB.db");
+let db = new sqlite.Database("db/noconstpostagain.db");
 
 let createDb = function(){
 
@@ -10,16 +10,25 @@ let createDb = function(){
         console.log("db open");
 
         //With restrictions
-        // let subredditRelation = db.prepare("CREATE TABLE Subreddit (subreddit_id VARCHAR PRIMARY KEY NOT NULL, subreddit TEXT UNIQUE NOT NULL)");
-        // let postRelation = db.prepare("CREATE TABLE Post (id VARCHAR PRIMARY KEY NOT NULL, name TEXT NOT NULL, parent_id VARCHAR NOT NULL, link_id VARCHAR NOT NULL, author TEXT NOT NULL, body TEXT NOT NULL, subreddit_id VARCHAR NOT NULL, score INT NOT NULL, created_UTC INT NOT NULL, CHECK(link_id LIKE 't3_%'))");
+
+        try {
+            // let subredditRelation = db.prepare("CREATE TABLE Subreddit (subreddit_id VARCHAR PRIMARY KEY NOT NULL, subreddit TEXT NOT NULL UNIQUE)");
+            // let postRelation = db.prepare("CREATE TABLE Post (id VARCHAR PRIMARY KEY NOT NULL, name TEXT NOT NULL, parent_id VARCHAR NOT NULL, link_id VARCHAR NOT NULL, author TEXT NOT NULL, body TEXT NOT NULL, subreddit_id VARCHAR NOT NULL, score INT NOT NULL, created_UTC INT NOT NULL, CHECK(link_id LIKE 't3_%'))");
+
+            // let subredditRelation = db.prepare("CREATE TABLE Subreddit (subreddit_id VARCHAR, subreddit TEXT)");
+            let postRelation = db.prepare("CREATE TABLE Post (id VARCHAR, name TEXT, parent_id VARCHAR, link_id VARCHAR, author TEXT, body TEXT, subreddit_id VARCHAR, score INT, created_UTC INT, FOREIGN KEY (subreddit_id) REFERENCES Subreddit(subreddit_id))");
+            //
+            //
+            // subredditRelation.run();
+            postRelation.run();
+
+        } catch (e) {
+            console.error(e);
+        }
 
 
         // //No restrictions
-        let subredditRelation = db.prepare("CREATE TABLE Subreddit (subreddit_id VARCHAR, subreddit TEXT)");
-        let postRelation = db.prepare("CREATE TABLE Post (id VARCHAR PRIMARY KEY, name TEXT, parent_id VARCHAR, link_id VARCHAR, author TEXT, body TEXT, subreddit_id VARCHAR, score INT, created_UTC INT)");
-        // // //
-        subredditRelation.run();
-        postRelation.run();
+        // // // //
         // // Post:
         //     id (VARCHAR 7) - Unique, key,
         //     name (VARCHAR 10) - Unique, key
@@ -52,16 +61,18 @@ let addRedditComment = function (postTuples, subredditTuples) {
 
             db.run("BEGIN TRANSACTION");
             let postRelation = db.prepare("INSERT INTO Post(id, name, parent_id, link_id, author, body, subreddit_id, score, created_utc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            let subredditRelation = db.prepare("INSERT OR REPLACE INTO Subreddit(subreddit_id, subreddit) VALUES(?, ?)");
+            // let subredditRelation = db.prepare("INSERT OR IGNORE INTO Subreddit(subreddit_id, subreddit) VALUES(?, ?)");
 
 
             postTuples.forEach(tuple => {
+                // db.run("INSERT OR IGNORE INTO Post (id, name, parent_id, link_id, author, body, subreddit_id, score, created_utc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", tuple);
                 postRelation.run(tuple);
             });
 
-            subredditTuples.forEach(tuple => {
-                subredditRelation.run(tuple);
-            });
+            // subredditTuples.forEach(tuple => {
+            // //     // db.run("INSERT OR IGNORE INTO Subreddit (subreddit_id, subreddit) VALUES (?, ?)", tuple);
+            //     subredditRelation.run(tuple);
+            // });
 
             db.run("COMMIT");
 
