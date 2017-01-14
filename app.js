@@ -86,20 +86,28 @@ let dataStreamToObjects = function(data) {
 };
 
 // stream.pipe(dataHandler);
-
+let counter = 0;
+let timeoutCounter = 1;
 stream.on("data", (data) => {
     stream.pause();
-
     dataStreamToObjects(data);
-
-stream.resume();
-
+    counter +=1;
+    if (counter % 1000 === 0) {
+        console.log("data sections" + counter);
+        console.log("timeout " + timeoutCounter);
+        timeoutCounter += 1;
+        setTimeout(function() {
+            stream.resume();
+        }, 10000);
+    } else {
+        stream.resume();
+    }
 });
 
 stream.on("end", ()=> {
     console.timeEnd("dataEnd");
 
-    db.db.run("SELECT name FROM Posts", () => {
-        console.timeEnd("dbTime");
-    })
+    // db.db.run("SELECT name FROM Post", () => {
+    //     console.timeEnd("dbTime");
+    // })
 });

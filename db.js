@@ -1,7 +1,7 @@
 "use strict";
 
 let sqlite = require("sqlite3");
-let db = new sqlite.Database("db/bigOne.db");
+let db = new sqlite.Database("db/largeDB.db");
 
 let createDb = function(){
 
@@ -10,8 +10,8 @@ let createDb = function(){
         console.log("db open");
 
         //With restrictions
-        // let subredditRelation = db.prepare("CREATE TABLE Subreddit (subreddit_id VARCHAR PRIMARY KEY, subreddit TEXT UNIQUE)");
-        // let postRelation = db.prepare("CREATE TABLE Post (id VARCHAR PRIMARY KEY, name TEXT, parent_id VARCHAR, link_id VARCHAR, author TEXT, body TEXT, subreddit_id VARCHAR, score INT, created_UTC INT)");
+        // let subredditRelation = db.prepare("CREATE TABLE Subreddit (subreddit_id VARCHAR PRIMARY KEY NOT NULL, subreddit TEXT UNIQUE NOT NULL)");
+        // let postRelation = db.prepare("CREATE TABLE Post (id VARCHAR PRIMARY KEY NOT NULL, name TEXT NOT NULL, parent_id VARCHAR NOT NULL, link_id VARCHAR NOT NULL, author TEXT NOT NULL, body TEXT NOT NULL, subreddit_id VARCHAR NOT NULL, score INT NOT NULL, created_UTC INT NOT NULL, CHECK(link_id LIKE 't3_%'))");
 
 
         // //No restrictions
@@ -32,7 +32,6 @@ let createDb = function(){
         //
         //
         // created_utc (INT 10)
-        //
         // SubReddit (subreddit_id -> subreddit):
         // subreddit_id (VARCHAR, 20)
         // subreddit (VARCHAR, 8)
